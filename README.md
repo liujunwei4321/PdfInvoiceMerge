@@ -11,9 +11,9 @@
 
 
 ## 下载
-- [最新版本 v1.0.0.0](https://github.com/hetaoos/PdfInvoiceMerge/releases/download/v1.0.0.0/PdfInvoiceMerge.zip)
+- [最新版本 v1.0.0.3](https://github.com/liujunwei4321/PdfInvoiceMerge/releases/download/V1.0.0.3/PdfInvoiceMerge-master-v1.0.0.3.7z)
 
-- [更多版本](https://github.com/hetaoos/PdfInvoiceMerge/releases/)
+- [更多版本](https://github.com/liujunwei4321/PdfInvoiceMerge/releases/)
 
 ## 界面预览
 ![ui](https://user-images.githubusercontent.com/1094462/50446646-0c9b0e00-0951-11e9-89d4-b8306d27ac07.png)
