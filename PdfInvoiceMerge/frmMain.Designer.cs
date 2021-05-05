@@ -57,7 +57,7 @@
             this.btnClear,
             this.cmbMergeType,
             this.btnMerge});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 25);
+            this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(758, 25);
             this.toolStrip1.TabIndex = 1;
@@ -69,7 +69,7 @@
             this.btnAdd.Image = ((System.Drawing.Image)(resources.GetObject("btnAdd.Image")));
             this.btnAdd.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(76, 22);
+            this.btnAdd.Size = new System.Drawing.Size(79, 22);
             this.btnAdd.Text = "添加发票(&A)";
             this.btnAdd.ToolTipText = "添加发票，支持拖拽添加发票文件";
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
@@ -80,7 +80,7 @@
             this.btnClear.Image = ((System.Drawing.Image)(resources.GetObject("btnClear.Image")));
             this.btnClear.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(52, 22);
+            this.btnClear.Size = new System.Drawing.Size(53, 22);
             this.btnClear.Text = "清空(&C)";
             this.btnClear.ToolTipText = "清空发票列表，也可以选中后按 DELETE 键删除。";
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
@@ -91,10 +91,12 @@
             this.cmbMergeType.Items.AddRange(new object[] {
             "每页一张发票",
             "每页两张发票",
-            "每页四张发票"});
+            "每页四张发票",
+            "生成文件集合"});
             this.cmbMergeType.Name = "cmbMergeType";
             this.cmbMergeType.Size = new System.Drawing.Size(121, 25);
             this.cmbMergeType.ToolTipText = "输出样式";
+            this.cmbMergeType.SelectedIndexChanged += new System.EventHandler(this.cmbMergeType_SelectedIndexChanged);
             // 
             // btnMerge
             // 
@@ -114,7 +116,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(758, 25);
+            this.menuStrip1.Size = new System.Drawing.Size(758, 24);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -123,13 +125,13 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(58, 21);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
             this.fileToolStripMenuItem.Text = "文件(&F)";
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
             this.exitToolStripMenuItem.Text = "退出(&X)";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -139,7 +141,7 @@
             this.sourceToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(61, 21);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(62, 20);
             this.helpToolStripMenuItem.Text = "帮助(&H)";
             // 
             // sourceToolStripMenuItem
@@ -169,18 +171,19 @@
             // labInfo
             // 
             this.labInfo.Name = "labInfo";
-            this.labInfo.Size = new System.Drawing.Size(35, 17);
+            this.labInfo.Size = new System.Drawing.Size(36, 17);
             this.labInfo.Text = "就绪.";
             // 
             // listInvoices
             // 
             this.listInvoices.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listInvoices.Font = new System.Drawing.Font("Microsoft YaHei", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.listInvoices.FormattingEnabled = true;
-            this.listInvoices.ItemHeight = 21;
-            this.listInvoices.Location = new System.Drawing.Point(0, 50);
+            this.listInvoices.ItemHeight = 19;
+            this.listInvoices.Location = new System.Drawing.Point(0, 49);
             this.listInvoices.Name = "listInvoices";
             this.listInvoices.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.listInvoices.Size = new System.Drawing.Size(758, 323);
+            this.listInvoices.Size = new System.Drawing.Size(758, 324);
             this.listInvoices.Sorted = true;
             this.listInvoices.TabIndex = 4;
             this.listInvoices.DoubleClick += new System.EventHandler(this.listInvoices_DoubleClick);
@@ -201,20 +204,20 @@
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(758, 395);
             this.Controls.Add(this.listInvoices);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);
-            this.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(5);
             this.MaximizeBox = false;
             this.Name = "frmMain";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "PDF 发票合并工具";
+            this.Text = "PDF 发票合并工具 V1.0.0.3";
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.frmMain_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.frmMain_DragEnter);

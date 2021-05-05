@@ -94,10 +94,12 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Costura.Fody">
-      <Version>3.2.1</Version>
+      <Version>3.3.3</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="iTextSharp">
-      <Version>5.5.13</Version>
+      <Version>5.5.13.2</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

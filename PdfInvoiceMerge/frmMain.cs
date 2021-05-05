@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using iTextSharp.awt.geom;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.collection;
 
 namespace PdfInvoiceMerge
 {
@@ -32,6 +33,10 @@ namespace PdfInvoiceMerge
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
+            if (cmbMergeType.SelectedIndex == 3)
+                openFileDialog1.Filter = "All files (*.*)|*.*|PDF 发票文件|*.pdf";
+            else
+                openFileDialog1.Filter = "PDF 发票文件|*.pdf";
             var dlg = openFileDialog1.ShowDialog();
             if (dlg != DialogResult.OK)
                 return;
@@ -105,11 +110,25 @@ namespace PdfInvoiceMerge
                 string path = item.ToString();
                 var info = new FileInfo(path);
 
-                if (info.Attributes.HasFlag(FileAttributes.Directory))
-                    files.AddRange(Directory.GetFiles(path, "*.pdf", SearchOption.AllDirectories));
-                else if (File.Exists(path) && path.EndsWith(".pdf", StringComparison.CurrentCultureIgnoreCase))
-                    files.Add(path);
+
+                    if (cmbMergeType.SelectedIndex == 3)
+                    {
+                        if (info.Attributes.HasFlag(FileAttributes.Directory))
+                            files.AddRange(Directory.GetFiles(path, "*.*", SearchOption.AllDirectories));
+                        else if (File.Exists(path))
+                            files.Add(path);
+                }
+                    else
+                    {
+                       if (info.Attributes.HasFlag(FileAttributes.Directory))                       
+                            files.AddRange(Directory.GetFiles(path, "*.pdf", SearchOption.AllDirectories));
+                       else if (File.Exists(path) && path.EndsWith(".pdf", StringComparison.CurrentCultureIgnoreCase))
+                            files.Add(path);   
+                    }
+
             }
+
+
             if (files.Any())
             {
                 listInvoices.Items.AddRange(files.ToArray());
@@ -150,6 +169,9 @@ namespace PdfInvoiceMerge
                     case 2:
                         Merge4(files, saveFileDialog1.FileName);
                         break;
+                    case 3:
+                        Mergeport(files, saveFileDialog1.FileName);
+                        break;
                 }
 
                 Process.Start(saveFileDialog1.FileName);
@@ -160,6 +182,15 @@ namespace PdfInvoiceMerge
                 return;
             }
         }
+
+        private static byte[] FlattenPdfFormToBytes(PdfReader reader)
+        {
+            var memStream = new MemoryStream();
+            var stamper = new PdfStamper(reader, memStream) { FormFlattening = true };
+            stamper.Close();
+            return memStream.ToArray();
+        }
+
 
         /// <summary>
         /// 每页一张发票
@@ -174,10 +205,12 @@ namespace PdfInvoiceMerge
                 using (FileStream newFileStream = new FileStream(outputFile, FileMode.Create))
                 {
                     PdfCopy writer = new PdfCopy(document, newFileStream);
+
                     if (writer == null)
                     {
                         return;
                     }
+                    writer.SetMergeFields();
 
                     document.Open();
 
@@ -185,13 +218,25 @@ namespace PdfInvoiceMerge
                     {
                         PdfReader reader = new PdfReader(file);
                         reader.ConsolidateNamedDestinations();
+                        //if (reader.AcroForm != null)
+                           // reader = new PdfReader(FlattenPdfFormToBytes(reader));
+                   
+                        writer.AddDocument(reader);
+                        //reader.Close();
+                        //PdfReader reader = new PdfReader(file);
+                        //reader.ConsolidateNamedDestinations();
 
-                        for (int i = 1; i <= reader.NumberOfPages; i++)
-                        {
-                            PdfImportedPage page = writer.GetImportedPage(reader, i);
-                            writer.AddPage(page);
-                        }
-                        reader.Close();
+                        //for (int i = 1; i <= reader.NumberOfPages; i++)
+                        //{
+                        //    PdfImportedPage page = writer.GetImportedPage(reader, i);
+                        //    writer.AddPage(page);
+                        //}
+                        //PRAcroForm form = reader.AcroForm;
+                        //if (form != null)
+                        //{
+                        //    writer.CopyAcroForm(reader);
+                        //}
+                        //reader.Close();
                     }
                     writer.Close();
                 }
@@ -203,8 +248,49 @@ namespace PdfInvoiceMerge
             finally
             {
                 document.Close();
+                //reader.Close();
+                //how to close all reader instances here using reader.close()?
             }
         }
+
+
+        public static void Mergeport(IEnumerable<string> files, string outputFile)
+        {
+            var document = new Document();
+            try
+            {
+                    var writer = PdfWriter.GetInstance(document, new FileStream(outputFile, FileMode.Create));
+                    document.Open();
+
+                     BaseFont bf=BaseFont.CreateFont("c://WINDOWS//Fonts//simsun.TTC,0", BaseFont.IDENTITY_H,BaseFont.NOT_EMBEDDED);
+                    iTextSharp.text.Font chfont = new iTextSharp.text.Font(bf, 8);
+                ////PdfCollectionItem collectionitem = new PdfCollectionItem();
+                    document.Add(new Paragraph("这是个 PDF portfolio 文件，里面有附件（文件），用 adobe reader 或 foxit reader 就能看见和另存为了。",chfont));
+                    PdfCollection collection = new PdfCollection(PdfCollection.TILE);
+                    collection.InitialDocument =files.First();
+                    writer.Collection = collection;
+
+                    foreach (string file in files)
+                    {
+                        PdfFileSpecification fs = PdfFileSpecification.FileEmbedded(writer, file, Path.GetFileName(file), null);
+                        fs.AddDescription(file, false);
+                        writer.AddFileAttachment(fs);
+                    }
+                //writer.Close();
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            finally
+            {
+                document.Close();
+                //reader.Close();
+                //how to close all reader instances here using reader.close()?
+            }
+        }
+
 
 
         /// <summary>
@@ -240,6 +326,7 @@ namespace PdfInvoiceMerge
                         return false;
 
                     var reader = new PdfReader(p);
+                    reader = new PdfReader(FlattenPdfFormToBytes(reader));
                     var page = writer.GetImportedPage(reader, 1);
 
                     AffineTransform af = new AffineTransform();
@@ -255,6 +342,7 @@ namespace PdfInvoiceMerge
                     af.Scale(scale, scale);
 
                     cb.AddTemplate(page, af);
+                    //reader.Close();
                     return true;
                 }
             }
@@ -270,7 +358,7 @@ namespace PdfInvoiceMerge
 
 
         /// <summary>
-        /// 每页两张发票
+        /// 每页四张发票
         /// </summary>
         /// <param name="files"></param>
         /// <param name="outputFile"></param>
@@ -303,7 +391,10 @@ namespace PdfInvoiceMerge
                         return false;
 
                     var reader = new PdfReader(p);
+                    reader = new PdfReader(FlattenPdfFormToBytes(reader));
+
                     var page = writer.GetImportedPage(reader, 1);
+                    //reader.Close();
 
                     AffineTransform af = new AffineTransform();
 
@@ -355,6 +446,22 @@ namespace PdfInvoiceMerge
         {
             var frm = new frmAbout();
             frm.ShowDialog();
+        }
+
+
+        private void cmbMergeType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbMergeType.SelectedIndex != 3)
+            {
+                for (int index = listInvoices.Items.Count-1; index > 0 ;index--)
+                {
+                       if (listInvoices.Items[index].ToString().Substring(listInvoices.Items[index].ToString().Length - 4).ToLower()!=".pdf")
+                    {
+                        listInvoices.Items.RemoveAt(index);
+                    }
+                }
+                RefreshState();
+            }
         }
     }
 }
